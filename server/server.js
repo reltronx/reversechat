@@ -24,11 +24,13 @@ io.on('connection' , (socket) => {
 
    socket.broadcast.emit('newMessage',generateMessage('Admin','A new member has joined'))
 
-   socket.on('createMessage', (message) => {
+   socket.on('createMessage', (message,callback) => {
 
+
+        callback('This is from the server');
         console.log(`${message.from} just created a message which is now being broadcasted`);
         
-        socket.broadcast.emit('newMessage',generateMessage(message.from,message.text));
+        io.emit('newMessage',generateMessage(message.from,message.text));
       
    });
 
