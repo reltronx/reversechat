@@ -5,7 +5,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 //My own Modules
-var {generateMessage} = require('./utils/message');
+var {generateMessage,generateLocationMessage} = require('./utils/message');
 
 //path is used to go back a directory neatly by __dirname , '../public'
 const path = require('path');
@@ -26,7 +26,6 @@ io.on('connection' , (socket) => {
 
    socket.on('createMessage', (message,callback) => {
 
-
         callback('This is from the server');
         console.log(`${message.from} just created a message which is now being broadcasted`);
         
@@ -34,10 +33,14 @@ io.on('connection' , (socket) => {
       
    });
 
+   socket.on('createLocation', (coordinates,callback) => {
+        io.emit('newLocationMessage',generateLocationMessage('Admin',coordinates.latitude,coordinates.longitude));  
+   });
+
 
     socket.on('disconnect' , () =>{
         console.log('Client Disconnected ');
-    })
+    });
 });
 
 
