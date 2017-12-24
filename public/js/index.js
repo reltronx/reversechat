@@ -31,23 +31,33 @@ socket.on('newLocationMessage', function(location){
 
 jQuery('#message-form').on('submit', function(e){
     e.preventDefault();
+
+    var message = jQuery('[name="message"]');
+
     socket.emit('createMessage',{
         from: 'user',
-        text: jQuery('[name="message"]').val()
+        text: message.val()
     },function(data){
+        message.val('');
         console.log('Got it',data);
     });
 
-    jQuery('[name="message"]').val()='';
 });
 
-jQuery('#location').on('click', function(){
+
+var locationButton = jQuery('#location');
+locationButton.on('click', function(){
 
     if(!navigator.geolocation){
         return alert('browser support not avavilvale for geolocation');
     }
 
+    locationButton.attr('disabled','disabled').text('sending location');
+
     navigator.geolocation.getCurrentPosition(function(position){
+
+        locationButton.removeAttr('disabled').text('send location');
+
         var latitude = position.coords.latitude;
         var longitude = position.coords.longitude;
 
@@ -56,6 +66,7 @@ jQuery('#location').on('click', function(){
         });
 
     }, function(){
+        locationButton.removeAttr('disabled').text('send location');
         return alert('unable to fetch location');
     });
 });
