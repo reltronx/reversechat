@@ -1,58 +1,42 @@
-//native modules
-const path = require('path');
-const http = require('http');
 
-//external modules
-const express = require('express');
-const socketIO = require('socket.io');
-
-const publicPath = path.join(__dirname , '../public');
-const port = process.env.PORT || 3000;
+var express = require('express');
 var app = express();
-var server = http.createServer(app);
-var io = socketIO(server);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
+//My own Modules
+var {generateMessage} = require('./utils/message');
+
+//path is used to go back a directory neatly by __dirname , '../public'
+const path = require('path');
+const publicPath = path.join(__dirname , '../public');
 
 
+const port = process.env.PORT || 3000;
+
+//setup the server to serve static files from the public folder
 app.use(express.static(publicPath));
 
 io.on('connection' , (socket) => {
     console.log('new user connected');
 
-   socket.emit('newMessage',{
-       from: 'Admin',
-       text: 'Welcome to the char room'
+   socket.emit('newMessage',generateMessage('Admin','Welcome to the chat room'));
+
+   socket.broadcast.emit('newMessage',generateMessage('Admin','A new member has joined'))
+
+   socket.on('createMessage', (message) => {
+
+        console.log(`${message.from} just created a message which is now being broadcasted`);
+        
+        socket.broadcast.emit('newMessage',generateMessage(message.from,message.text));
+      
    });
-
-   socket.broadcast.emit('newMessage',{
-       from: 'Admin',
-       text: 'A new User has joined',
-       createdAt: new Date().getTime()
-   })
-
-    socket.on('createMessage', (message) => {
-        console.log('client created an message: ',message);
-
-        socket.broadcast.emit('newMessage',{
-            from: message.from,
-            text: message.text,
-            createdAt: new Date().getTime()
-        })
-        // io.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createdAt: new Date().getTime()
-        // });
-    });
 
 
     socket.on('disconnect' , () =>{
         console.log('Client Disconnected ');
     })
 });
-
-
-
-
 
 
 server.listen(port , (err) => {
