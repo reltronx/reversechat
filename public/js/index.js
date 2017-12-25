@@ -1,5 +1,24 @@
 var socket = io();
 
+var scrollToBottom = function(){
+
+    //selectors
+
+    var messages = jQuery('#messages');
+    var newMessage = messages.children('li:last-child');
+    //Heights
+    var scrollTop = messages.prop('scrollTop');
+    var scrollHeight = messages.prop('scrollHeight');
+    var clientHeight = messages.prop('clientHeight');
+    var newMessageHeight =  newMessage.innerHeight();
+    var lastMessageHeight =  newMessage.prev().innerHeight();
+
+    if(scrollTop + clientHeight +  newMessageHeight + lastMessageHeight >= scrollHeight ){
+        messages.scrollTop(scrollHeight);
+    }
+};
+
+
 socket.on('connect', () => {
     console.log('connected to server');   
 });
@@ -11,11 +30,21 @@ socket.on('disconnect' ,function(){
 socket.on('newMessage', function(message){
 
     var formatedTime = moment(message.createdAt).format('d:mm a');
-    console.log('New message Arrived',message);
+    var template = jQuery("#message-template").html();
+    var html = Mustache.render(template,{
+        from:message.from,
+        text:message.text,
+        createdAt:formatedTime
+    });
+    jQuery("#messages").append(html);
 
-    var li = jQuery('<li></li>');
-    li.text(`${message.from} ${formatedTime} : ${message.text}`);
-    jQuery("#messages").append(li);
+    scrollToBottom();
+    // 
+    // console.log('New message Arrived',message);
+
+    // var li = jQuery('<li></li>');
+    // li.text(`${message.from} ${formatedTime} : ${message.text}`);
+    // jQuery("#messages").append(li);
 });
 
 
@@ -23,14 +52,25 @@ socket.on('newMessage', function(message){
 socket.on('newLocationMessage', function(location){
 
     var formatedTime = moment(location.createdAt).format('d:mm a');
-    console.log('New location message Arrived',location);
+    var template = jQuery("#location-message-template").html();
+    var html = Mustache.render(template,{
+        from:location.from,
+        url:location.url,
+        createdAt:formatedTime
+    });
+    jQuery("#messages").append(html);
 
-    var li = jQuery('<li></li>');
-    var a = jQuery('<a target="_blank">My current location</a>');
-    li.text(`${location.from} ${formatedTime} : `);
-    a.attr('href',location.url);
-    li.append(a);
-    jQuery("#messages").append(li);
+    scrollToBottom();
+
+    // var formatedTime = moment(location.createdAt).format('d:mm a');
+    // console.log('New location message Arrived',location);
+
+    // var li = jQuery('<li></li>');
+    // var a = jQuery('<a target="_blank">My current location</a>');
+    // li.text(`${location.from} ${formatedTime} : `);
+    // a.attr('href',location.url);
+    // li.append(a);
+    // jQuery("#messages").append(li);
 });
 
 jQuery('#message-form').on('submit', function(e){
