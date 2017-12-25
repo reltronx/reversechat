@@ -9,21 +9,25 @@ socket.on('disconnect' ,function(){
 });
 
 socket.on('newMessage', function(message){
+
+    var formatedTime = moment(message.createdAt).format('d:mm a');
     console.log('New message Arrived',message);
 
     var li = jQuery('<li></li>');
-    li.text(`${message.from} : ${message.text}`);
+    li.text(`${message.from} ${formatedTime} : ${message.text}`);
     jQuery("#messages").append(li);
 });
 
 
 
 socket.on('newLocationMessage', function(location){
+
+    var formatedTime = moment(location.createdAt).format('d:mm a');
     console.log('New location message Arrived',location);
 
     var li = jQuery('<li></li>');
     var a = jQuery('<a target="_blank">My current location</a>');
-    li.text(`${location.from} : `);
+    li.text(`${location.from} ${formatedTime} : `);
     a.attr('href',location.url);
     li.append(a);
     jQuery("#messages").append(li);
@@ -39,7 +43,7 @@ jQuery('#message-form').on('submit', function(e){
         text: message.val()
     },function(data){
         message.val('');
-        console.log('Got it',data);
+        console.log('acknowledgement from the server');
     });
 
 });
