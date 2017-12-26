@@ -6,6 +6,10 @@ var io = require('socket.io')(server);
 
 //My own Modules
 var {generateMessage,generateLocationMessage} = require('./utils/message');
+var {isRealString} = require('./utils/validation');
+var {User} = require('./utils/user');
+
+var users = new User();
 
 //path is used to go back a directory neatly by __dirname , '../public'
 const path = require('path');
@@ -18,11 +22,30 @@ const port = process.env.PORT || 3000;
 app.use(express.static(publicPath));
 
 io.on('connection' , (socket) => {
-    console.log('new user connected');
 
-   socket.emit('newMessage',generateMessage('Admin','Welcome to the chat room'));
+   console.log('new user connected');
 
-   socket.broadcast.emit('newMessage',generateMessage('Admin','A new member has joined'))
+   
+   socket.on('join', (param,callback) => {
+
+        if(!isRealString(param.name) || !isRealString(param.room) ){
+           return  callback({message:'invalid room'});
+        }
+
+        socket.join(param.room);
+
+        users.removeUser(socket.id);
+        users.addUser(socket.id,param.name,param.room);
+
+        io.to(param.room).emit('updateUserList',users.getUserList(param.room))
+
+        socket.emit('newMessage',generateMessage('Admin','Welcome to the chat room'));
+    
+        socket.broadcast.to(param.room).emit('newMessage',generateMessage('Admin',`${param.name} has joined the room`));
+
+        callback();
+
+   });
 
    socket.on('createMessage', (message,callback) => {
 
@@ -38,9 +61,18 @@ io.on('connection' , (socket) => {
    });
 
 
-    socket.on('disconnect' , () =>{
+   socket.on('disconnect' , () =>{
+        var user = users.removeUser(socket.id);
+
+        if(user){
+
+            io.to(user.room).emit('updateUserList',users.getUserList(user.room));
+            socket.broadcast.to(user.room).emit('newMessage',generateMessage('Admin',`${user.name} has left the room`));
+
+        }
         console.log('Client Disconnected ');
-    });
+   });
+
 });
 
 
