@@ -23,6 +23,9 @@ app.use(express.static(publicPath));
 
 io.on('connection' , (socket) => {
 
+
+  
+
    console.log('new user connected');
 
    
@@ -49,15 +52,26 @@ io.on('connection' , (socket) => {
 
    socket.on('createMessage', (message,callback) => {
 
-        callback();
-        console.log(`${message.from} just created a message which is now being broadcasted`);
+   
+    var currentUser = users.getUser(socket.id);
+
+    if(currentUser && isRealString(message.text))
+    {
+        console.log(`${currentUser.name} just created a message which is now being broadcasted`);
         
-        io.emit('newMessage',generateMessage(message.from,message.text));
+        io.to(currentUser.room).emit('newMessage',generateMessage(currentUser.name,message.text));
+        return callback();
+    }
+        callback('error');
+      
       
    });
 
    socket.on('createLocation', (coordinates,callback) => {
-        io.emit('newLocationMessage',generateLocationMessage('Admin',coordinates.latitude,coordinates.longitude));  
+    var currentUser = users.getUser(socket.id);
+
+    
+        io.to(currentUser.room).emit('newLocationMessage',generateLocationMessage(currentUser.name,coordinates.latitude,coordinates.longitude));  
    });
 
 

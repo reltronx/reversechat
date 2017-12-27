@@ -97,11 +97,14 @@ jQuery('#message-form').on('submit', function(e){
     var message = jQuery('[name="message"]');
 
     socket.emit('createMessage',{
-        from: param.name,
         text: message.val()
     },function(data){
-        message.val('');
-        console.log('acknowledgement from the server');
+        if(!data){
+            message.val('');
+           return console.log('acknowledgement from the server');
+        }
+      
+        console.log('oops');
     });
 
 });
