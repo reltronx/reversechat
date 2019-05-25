@@ -89,15 +89,23 @@ io.on('connection' , (socket) => {
    });
 
    socket.on('createMessage', (message,callback) => {
-
-        var currentUser = users.getUser(socket.id);
-
-        if(currentUser && isRealString(message.text))
-        {
-            console.log(`${currentUser.name} just created a message which is now being broadcasted`);
-            
+       
+       users.updateUserMessageCount(socket.id);
+       var currentUser = users.getUser(socket.id);
+       console.log("the current user is",currentUser)
+       
+       if(currentUser && isRealString(message.text))
+       {
+           console.log(`${currentUser.name} just created a message which is now being broadcasted`);
+           
+           console.log("his msg count is",currentUser.count)
             io.to("reversechat").emit('newMessage',generateMessage(currentUser.name,message.text));
             io.to("reversechat").emit('newMessage',generateMessage('Reverse bot',`${message.text.split(" ").reverse().join(" ")}`));
+            io.to("reversechat").emit('updateCounts',currentUser);
+
+            io.to("reversechat").emit('updateUserList',users.getUserList("reversechat"));
+
+
     
             // socket.broadcast.to("reversechat").emit('newMessage',generateMessage('Reverse bot',`${message.text.split(" ").reverse().join(" ")}`));
     

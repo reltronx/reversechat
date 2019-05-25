@@ -6,9 +6,13 @@ class User{
     }
 
     addUser(id,name){
-        var user = {id,name};
+        var user = {id,name,count:0};
         this.users.push(user);
         return user;
+    }
+    updateUserMessageCount(id){
+        let user = this.users.filter((user) => user.id === id)[0];
+        user.count = user.count + 1 ;
     }
 
     getUser(id){
@@ -27,7 +31,7 @@ class User{
 
     getUserList(){
         var userList = this.users;
-        var list = userList.map((user) => user.name);
+        var list = userList.map((user) =>{return  {name: user.name,count:user.count}});
         return list;
     }
 }

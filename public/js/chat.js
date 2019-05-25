@@ -33,10 +33,10 @@ socket.on('disconnect' ,function(){
 });
 
 socket.on('updateUserList',function(users){
-    console.log(users);
+
     var ol = jQuery('<ol></ol>');
     users.forEach((user) => {
-        ol.append(jQuery('<li></li>').text(user));
+        ol.append(jQuery('<li></li>').text(user.name + " count:= "+ user.count));
     });
     jQuery("#users").html('');
     jQuery("#users").append(ol);
@@ -44,7 +44,6 @@ socket.on('updateUserList',function(users){
 
 socket.on('newMessage', function(message){
 
-    console.log(message.from,"Hpnolulu")
     let src = message.from === "Reverse bot" ? "https://news.bitcoin.com/wp-content/uploads/2018/04/bitcoin-trading-bot-1520x1024.jpg":"https://cdn1.vectorstock.com/i/1000x1000/77/30/default-avatar-profile-icon-grey-photo-placeholder-vector-17317730.jpg"
 
     var formatedTime = moment(message.createdAt).format('dd hh:mm a');
