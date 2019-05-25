@@ -45,6 +45,26 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+require('./utils/facebook_passport');
+
+app.get('/auth/facebook', 
+    passport.authenticate('facebook',{
+        scope: 'email'
+    }),
+);
+app.get('/auth/facebook', 
+    passport.authenticate('facebook',{
+        scope: 'email'
+    }),
+);
+
+app.get('/auth/facebook/callback',(req,res)=> passport.authenticate('facebook',{
+    successRedirect : `/${req.param.name}`,
+    failureRedirect : '/',
+    failureFlash : true
+}));
+
+
 io.on('connection' , (socket) => {
    console.log('new user connected with id ::' , socket.id);
    socket.on('join', (param,callback) => {

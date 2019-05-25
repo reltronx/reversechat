@@ -9,7 +9,7 @@
 <body>
     <div class="chat">
         <div class="chat__sidebar">
-            <h3>People</h3>
+            <h3>active members</h3>
 
             <div id="users"></div>
 
@@ -35,7 +35,7 @@
         <li class="message">
             <div class ="message__title">
                 
-                <img style="width:43px;height:42px" src="https://cdn1.vectorstock.com/i/1000x1000/77/30/default-avatar-profile-icon-grey-photo-placeholder-vector-17317730.jpg" alt="">
+                <img style="width:43px;height:42px" src="{{{src}}}" alt="">
                 
                 <h4 style="padding-left: 16px">{{from}}</h4>
                 <br>
@@ -47,15 +47,6 @@
         </li>
     </script>
 
-    
-    <script id="location-message-template" type="text/template">
-        <li class="message">
-            <div class ="message__title">
-                <h4>{{from}}</h4>
-                <span>{{createdAt}}</span>
-            </div>
-        </li>
-    </script>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/lib/mustache.js"></script>
