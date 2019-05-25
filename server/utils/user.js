@@ -5,8 +5,8 @@ class User{
         this.users = [];
     }
 
-    addUser(id,name,room){
-        var user = {id,name,room};
+    addUser(id,name){
+        var user = {id,name};
         this.users.push(user);
         return user;
     }
@@ -25,8 +25,8 @@ class User{
 
     }
 
-    getUserList(room){
-        var userList = this.users.filter((user) => user.room===room);
+    getUserList(){
+        var userList = this.users;
         var list = userList.map((user) => user.name);
         return list;
     }

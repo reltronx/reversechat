@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
     <link rel="stylesheet" href="/css/style.css">
-    <title>chat app</title>
+    <title>reverse chat</title>
 </head>
 <body>
     <div class="chat">
@@ -19,11 +19,10 @@
                 
                 <div class="chat__footer">
                         <form id="message-form"  action="">
-                                <input name="message" placeholder="Say Hi!!"  type="text" autofocus autocomplete="off">
+                                <input name="message" placeholder="say something to reverse"  type="text" autofocus autocomplete="off">
                                 <button>send</button>
                         </form>
                         
-                        <button id="location">send location</button>
                 </div>
                  
         </div>
@@ -50,9 +49,6 @@
             <div class ="message__title">
                 <h4>{{from}}</h4>
                 <span>{{createdAt}}</span>
-            </div>
-            <div class ="message__body">
-                <a target="_blank" href="{{url}}">My Location</a>
             </div>
         </li>
     </script>

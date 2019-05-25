@@ -2,9 +2,7 @@ var socket = io();
 var param = jQuery.deparam(window.location.search);
 
 var scrollToBottom = function(){
-
     //selectors
-
     var messages = jQuery('#messages');
     var newMessage = messages.children('li:last-child');
     //Heights
@@ -13,7 +11,6 @@ var scrollToBottom = function(){
     var clientHeight = messages.prop('clientHeight');
     var newMessageHeight =  newMessage.innerHeight();
     var lastMessageHeight =  newMessage.prev().innerHeight();
-
     if(scrollTop + clientHeight +  newMessageHeight + lastMessageHeight >= scrollHeight ){
         messages.scrollTop(scrollHeight);
     }
@@ -67,29 +64,6 @@ socket.on('newMessage', function(message){
 
 
 
-socket.on('newLocationMessage', function(location){
-
-    var formatedTime = moment(location.createdAt).format('dd hh:mm a');
-    var template = jQuery("#location-message-template").html();
-    var html = Mustache.render(template,{
-        from:location.from,
-        url:location.url,
-        createdAt:formatedTime
-    });
-    jQuery("#messages").append(html);
-
-    scrollToBottom();
-
-    // var formatedTime = moment(location.createdAt).format('d:mm a');
-    // console.log('New location message Arrived',location);
-
-    // var li = jQuery('<li></li>');
-    // var a = jQuery('<a target="_blank">My current location</a>');
-    // li.text(`${location.from} ${formatedTime} : `);
-    // a.attr('href',location.url);
-    // li.append(a);
-    // jQuery("#messages").append(li);
-});
 
 jQuery('#message-form').on('submit', function(e){
     e.preventDefault();
@@ -103,35 +77,8 @@ jQuery('#message-form').on('submit', function(e){
             message.val('');
            return console.log('acknowledgement from the server');
         }
-      
-        console.log('oops');
+
     });
 
 });
 
-
-var locationButton = jQuery('#location');
-locationButton.on('click', function(){
-
-    if(!navigator.geolocation){
-        return alert('browser support not avavilvale for geolocation');
-    }
-
-    locationButton.attr('disabled','disabled').text('sending location');
-
-    navigator.geolocation.getCurrentPosition(function(position){
-
-        locationButton.removeAttr('disabled').text('send location');
-
-        var latitude = position.coords.latitude;
-        var longitude = position.coords.longitude;
-
-        socket.emit('createLocation',{latitude,longitude},function(data){
-            console.log("Got the location",data);
-        });
-
-    }, function(){
-        locationButton.removeAttr('disabled').text('send location');
-        return alert('unable to fetch location');
-    });
-});
